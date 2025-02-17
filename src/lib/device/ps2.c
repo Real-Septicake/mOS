@@ -74,6 +74,8 @@ const struct PS2Device *getPortType(int portnum) {
 #include "video/VGA_text.h"
 
 void vgaEditor(struct PS2Buf_t out) {
+    if(out.keyEvent.event != KeyPressed)
+        return;
     switch (out.keyEvent.code) {
     case Key_backspace:
     case Key_delete:
@@ -109,8 +111,8 @@ void ps2HandlerPort1(isr_registers_t *regs) {
             ring_buffer_push_g(&PS2Port1, out);
 
         // temporary to satisfy exactly what issue #7 says
-        if (out.keyEvent.code != Key_none && out.keyEvent.event == KeyPressed) {
-            vgaEditor(out);
+        if (out.keyEvent.code != Key_none) {
+            getHandler()(out);
         }
     }
 }
@@ -301,6 +303,18 @@ bool ps2Port1Present(void) {
 }
 bool ps2Port2Present(void) {
     return port2works;
+}
+
+KeyPressHandler currHandler = NULL;
+
+KeyPressHandler setKeyHandler(KeyPressHandler handler) {
+    KeyPressHandler prev = currHandler;
+    currHandler = handler;
+    return prev;
+}
+
+KeyPressHandler getHandler() {
+    return currHandler;
 }
 
 int ps2Init() {

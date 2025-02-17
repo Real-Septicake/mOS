@@ -66,6 +66,11 @@ struct PS2Buf_t {
     };
 };
 
+typedef void (*KeyPressHandler)(struct PS2Buf_t);
+
+KeyPressHandler setKeyHandler(KeyPressHandler);
+KeyPressHandler getHandler();
+
 int ps2Init();
 const struct PS2Device *getPortType(int portnum);
 
