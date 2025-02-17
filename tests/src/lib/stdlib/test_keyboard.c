@@ -93,6 +93,7 @@ int execCMD(struct TestCMD cmd, int idx) {
 }
 
 void test_main() {
+    setKeyHandler(vgaEditor);
     struct TestCMD b[] = {
         // set cursor position to a known position to prevent breaking if the
         // boot text changes
