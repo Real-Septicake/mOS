@@ -5,6 +5,12 @@
 #include "test.h"
 #include "video/VGA_text.h"
 
+#include "../lib/stdlib/stdio.h"
+
+void testHandler(struct PS2Buf_t out) {
+    clearScreen(black);
+}
+
 int os_main() {
     makeInterruptTable();
     init_pit();
@@ -16,6 +22,8 @@ int os_main() {
     writeText("Welcome To mOS!", (80 - 15) / 2, 5, red);
 
     println("It booted!!!", green);
+
+    setKeyHandler(vgaEditor);
 
     VGA_Color colour = light_cyan;
     const char *string = "Hello, World!";

@@ -100,4 +100,7 @@ void clearScreen(VGA_Color color);
 // sets the screen to character
 void clearScreenC(VGA_Char character);
 
+void disableCursor();
+void resetCursor();
+
 #endif // end VGA_TEXT_H
