@@ -168,7 +168,6 @@ static struct KbCmd endCMD() {
     return (struct KbCmd){CMD_END, {}};
 }
 
-typedef void (*KeyPressHandler)(struct PS2Buf_t);
 // Returns 0 when exiting normally, and anything else when things go wrong
 typedef int (*ExecFunc)(struct KbCmd, int *, KeyPressHandler);
 
