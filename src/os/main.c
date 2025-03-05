@@ -8,7 +8,50 @@
 #include "../lib/stdlib/stdio.h"
 
 void testHandler(struct PS2Buf_t out) {
+    static char buff[65];
+    static int idx = 0;
+
+    if(out.keyEvent.event != KeyPressed)
+        return;
+    switch (out.keyEvent.code) {
+    case Key_backspace:
+        if(idx == 0)
+            break;
+        idx--;
+        buff[idx] = 0;
+        getCursor()->pos--;
+        print(" ", white);
+        break;
+    case Key_delete:
+    case Key_tab:
+    case Key_esc:
+        break;
+    case Key_enter:
+        println("", white);
+        print("> ", white);
+        memset(buff, 0, 65);
+        idx = 0;
+        break;
+    default:
+        char buf[2] = " ";
+        buf[0] = keyPressToASCII(out.keyEvent);
+        if (buf[0] != 0) {
+            buff[idx++] = 0[buf];
+        }
+    }
+    getCursor()->pos = ((getCursor()->pos - VGA_MEMORY) / VGA_WIDTH) * VGA_WIDTH + 2 + VGA_MEMORY;
+    if(buff[0] != 0)
+        print(buff, white);
+    else {
+        getCursor()->pos--;
+        print(" ", white);
+    }
+}
+
+void transHandler(struct PS2Buf_t out) {
     clearScreen(black);
+    print("> ", white);
+    setKeyHandler(testHandler);
 }
 
 int os_main() {
@@ -23,7 +66,7 @@ int os_main() {
 
     println("It booted!!!", green);
 
-    setKeyHandler(vgaEditor);
+    setKeyHandler(transHandler);
 
     VGA_Color colour = light_cyan;
     const char *string = "Hello, World!";
