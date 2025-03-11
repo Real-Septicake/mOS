@@ -74,7 +74,7 @@ const struct PS2Device *getPortType(int portnum) {
 #include "video/VGA_text.h"
 
 void vgaEditor(struct PS2Buf_t out) {
-    if(out.keyEvent.event != KeyPressed)
+    if (out.keyEvent.event != KeyPressed)
         return;
     switch (out.keyEvent.code) {
     case Key_backspace:
