@@ -1,22 +1,22 @@
+#include "../lib/stdlib/stdio.h"
 #include "device/ps2.h"
 #include "device/serial.h"
 #include "hard/idt.h"
 #include "paging.h"
 #include "pit/pit.h"
+#include "stdlib/malloc.h"
 #include "test.h"
 #include "video/VGA_text.h"
-
-#include "../lib/stdlib/stdio.h"
 
 void testHandler(struct PS2Buf_t out) {
     static char buff[65];
     static int idx = 0;
 
-    if(out.keyEvent.event != KeyPressed)
+    if (out.keyEvent.event != KeyPressed)
         return;
     switch (out.keyEvent.code) {
     case Key_backspace:
-        if(idx == 0)
+        if (idx == 0)
             break;
         idx--;
         buff[idx] = 0;
@@ -37,11 +37,13 @@ void testHandler(struct PS2Buf_t out) {
         char buf[2] = " ";
         buf[0] = keyPressToASCII(out.keyEvent);
         if (buf[0] != 0) {
-            buff[idx++] = 0[buf];
+            buff[idx++] = 0 [buf];
         }
     }
-    getCursor()->pos = ((getCursor()->pos - VGA_MEMORY) / VGA_WIDTH) * VGA_WIDTH + 2 + VGA_MEMORY;
-    if(buff[0] != 0)
+    getCursor()->pos =
+        ((getCursor()->pos - VGA_MEMORY) / VGA_WIDTH) * VGA_WIDTH + 2 +
+        VGA_MEMORY;
+    if (buff[0] != 0)
         print(buff, white);
     else {
         getCursor()->pos--;
@@ -58,6 +60,7 @@ void transHandler(struct PS2Buf_t out) {
 int os_main() {
     makeInterruptTable();
     initPaging();
+    init_malloc();
     init_pit();
     serialInit();
     ps2Init();
@@ -73,6 +76,11 @@ int os_main() {
     VGA_Color colour = light_cyan;
     const char *string = "Hello, World!";
     println(string, colour);
+
+    char buff[64];
+    Chunk *biggest = getBiggest();
+    snprintf(buff, 64, "%i | %i", biggest->base_lower, biggest->len_lower);
+    println(buff, green);
 
     static const char test_str[] = "test";
     size_t test_idx = 0;
