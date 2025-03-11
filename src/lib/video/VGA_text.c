@@ -271,8 +271,8 @@ void disableCursor() {
 
 void resetCursor() {
     outb(VGA_ADDR_PORT, 0x0A);
-	outb(VGA_DATA_PORT, (inb(0x3D5) & 0xC0) | 13);
+    outb(VGA_DATA_PORT, (inb(0x3D5) & 0xC0) | 13);
 
-	outb(VGA_ADDR_PORT, 0x0B);
-	outb(VGA_DATA_PORT, (inb(0x3D5) & 0xE0) | 14);
+    outb(VGA_ADDR_PORT, 0x0B);
+    outb(VGA_DATA_PORT, (inb(0x3D5) & 0xE0) | 14);
 }
