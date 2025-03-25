@@ -15,13 +15,6 @@ Chunk biggest;
 uint32_t base_addr;
 uint32_t top;
 
-typedef struct _Block {
-    size_t len;
-    char used;
-    struct _Block *last,
-        *next; // doubly linked list to allow for defragging in both directions
-} Block;
-
 Block *head = NULL;
 
 void init_malloc() {
@@ -45,7 +38,7 @@ void init_malloc() {
     top = base_addr;
 }
 
-Chunk *getBiggest() {
+const Chunk *getBiggest() {
     return &biggest;
 }
 
@@ -59,6 +52,8 @@ void *sbrk(intptr_t inc) {
 }
 
 void *malloc(size_t size) {
+    if (size == 0)
+        return NULL;
     size_t full_size = size + sizeof(Block);
     if (head) {
         Block *last = NULL;
@@ -77,7 +72,8 @@ void *malloc(size_t size) {
                 curr->used = 1;
                 return curr + 1; // return the address right after the block
             } else {
-                void *ptr = curr + 1;
+                void *ptr = curr;
+                ptr += sizeof(Block);
                 curr->len -= full_size;
                 ptr += curr->len;
                 Block *header = (Block *)ptr;
@@ -89,10 +85,13 @@ void *malloc(size_t size) {
                     curr->next->last = header;
                 header->last = curr;
                 curr->next = header;
+                if (curr->len == 0)
+                    curr->used = 0;
+                return header;
             }
         } else {
             void *ptr = sbrk(full_size);
-            if (ptr == (void*)-1) {
+            if (ptr == (void *)-1) {
                 return NULL;
             }
             Block *header = (Block *)ptr;
@@ -106,7 +105,7 @@ void *malloc(size_t size) {
         }
     } else {
         void *ptr = sbrk(full_size);
-        if (ptr == (void*)-1) {
+        if (ptr == (void *)-1) {
             return NULL;
         }
         Block *header = (Block *)ptr;
@@ -117,7 +116,7 @@ void *malloc(size_t size) {
         head = header;
         return ptr + sizeof(Block);
     }
-    return NULL;
+    // return NULL;
 }
 
 void free(void *ptr) {
