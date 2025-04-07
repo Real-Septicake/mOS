@@ -36,6 +36,7 @@ void init_malloc() {
     }
     base_addr = biggest.base_lower;
     top = base_addr;
+    head = NULL;
 }
 
 const Chunk *getBiggest() {
@@ -87,7 +88,7 @@ void *malloc(size_t size) {
                 curr->next = header;
                 if (curr->len == 0)
                     curr->used = 0;
-                return header;
+                return ptr + sizeof(Block); // return address after block
             }
         } else {
             void *ptr = sbrk(full_size);
@@ -134,6 +135,7 @@ void free(void *ptr) {
         header->last->len += header->len + sizeof(Block);
         header->last->next = header->next;
     }
+    return;
 }
 
 // sorts first by type, then by base address

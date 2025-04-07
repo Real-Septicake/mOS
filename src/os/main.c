@@ -78,7 +78,7 @@ int os_main() {
     println(string, colour);
 
     char buff[64];
-    Chunk *biggest = getBiggest();
+    const Chunk *biggest = getBiggest();
     snprintf(buff, 64, "%i | %i", biggest->base_lower, biggest->len_lower);
     println(buff, green);
 
