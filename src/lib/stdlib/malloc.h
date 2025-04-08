@@ -17,7 +17,7 @@ typedef struct {
     uint32_t attrs; // ACPI v3.0 Extended Attributes bitfield
 } Chunk;
 
-void *sbrk(size_t);
+void *sbrk(intptr_t);
 void init_malloc(void);
 void *malloc(size_t size);
 void free(void *ptr);
