@@ -1,6 +1,13 @@
 #include "stdlib/malloc.h"
 #include "test_helper.h"
 
+typedef struct _Block {
+    size_t len;
+    char used;
+    struct _Block *last,
+        *next; // doubly linked list to allow for defragging in both directions
+} Block;
+
 Block *getBlock(void *ptr) {
     return (Block *)(ptr - sizeof(Block));
 }
@@ -26,21 +33,28 @@ void test_main() {
     test_block_size(getBlock(ptr2), 2);
 
     free(ptr2);
-    test_block_size(getBlock(ptr1), sizeof(Block)); // check that block does not get defragged unnecessarily
+    test_block_size(
+        getBlock(ptr1),
+        sizeof(Block)); // check that block does not get defragged unnecessarily
 
     free(ptr1);
-    test_block_size(getBlock(ptr1), (2 * sizeof(Block) + 2)); // check that block is properly defragged
+    test_block_size(
+        getBlock(ptr1),
+        (2 * sizeof(Block) + 2)); // check that block is properly defragged
 
     ptr2 = malloc(4);
-    test_block_size(getBlock(ptr1), (sizeof(Block) - 2)); // check that block is broken down for space
+    test_block_size(
+        getBlock(ptr1),
+        (sizeof(Block) - 2)); // check that block is broken down for space
 
-    for(int i = 0; i < 200; i++) { // make sure it doesn't leak unexpectedly
+    for (int i = 0; i < 200; i++) { // make sure it doesn't leak unexpectedly
         ptr2 = malloc(4);
         free(ptr2);
     }
 
     test_block_size(getBlock(ptr1), (2 * sizeof(Block) + 2));
-    ASSERT_M(getBlock(ptr1)->next == NULL, "Head should not have ended with a `next` value");
+    ASSERT_M(getBlock(ptr1)->next == NULL,
+             "Head should not have ended with a `next` value");
 
     char done[] = "test_malloc done";
     while (!serialWriteReady(COM1))
