@@ -15,6 +15,13 @@ Chunk biggest;
 uint32_t base_addr;
 uint32_t top;
 
+typedef struct _Block {
+    size_t len;
+    char used;
+    struct _Block *last,
+        *next; // doubly linked list to allow for defragging in both directions
+} Block;
+
 Block *head = NULL;
 
 void init_malloc() {
