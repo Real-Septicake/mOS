@@ -4,6 +4,7 @@
 #include "stdlib.h"
 #include "string.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #define MAX_CHUNKS 100
