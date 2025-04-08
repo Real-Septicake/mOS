@@ -63,7 +63,7 @@ void *malloc(size_t size) {
         // hold a new node on top of the requested memory, or the node fits the
         // requested memory exactly. Any other break conditions run the risk of
         // slowly losing memory
-        while (curr && (curr->len < full_size || curr->len != size)) {
+        while (curr && (curr->len < full_size && curr->len != size)) {
             last = curr;
             curr = curr->next;
         }
@@ -101,7 +101,7 @@ void *malloc(size_t size) {
             header->next = NULL;
             header->used = 1;
             header->len = size;
-            head = header;
+            // head = header;
             return ptr + sizeof(Block);
         }
     } else {
@@ -117,7 +117,6 @@ void *malloc(size_t size) {
         head = header;
         return ptr + sizeof(Block);
     }
-    // return NULL;
 }
 
 void free(void *ptr) {
