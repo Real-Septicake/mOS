@@ -5,32 +5,44 @@ Block *getBlock(void *ptr) {
     return (Block *)(ptr - sizeof(Block));
 }
 
-void test_main() {
+void restart_malloc(void) {
     init_malloc();
     sbrk(0x100000); // stupid issue :(
+}
+
+void test_block_size(Block *ptr, size_t expected) {
+    ASSERT_M(ptr->len == expected,
+             "Size of block expected to be %i but was %i instead", expected,
+             getBlock(ptr)->len);
+}
+
+void test_main() {
+    restart_malloc();
 
     void *ptr1 = malloc(sizeof(Block));
-    ASSERT_M(getBlock(ptr1)->len == sizeof(Block),
-             "Size of block expected to be %i but was %i instead",
-             sizeof(Block), getBlock(ptr1)->len);
+    test_block_size(getBlock(ptr1), sizeof(Block));
 
     void *ptr2 = malloc(2);
-    ASSERT_M(getBlock(ptr2)->len == 2,
-             "Size of block expected to be 2 but was %i instead",
-             getBlock(ptr2)->len);
+    test_block_size(getBlock(ptr2), 2);
 
     free(ptr2);
-
-    ASSERT_M(getBlock(ptr1)->len == sizeof(Block),
-             "Size of block expected to be %i but was %i instead",
-             sizeof(Block), getBlock(ptr1)->len);
+    test_block_size(getBlock(ptr1), sizeof(Block)); // check that block does not get defragged unnecessarily
 
     free(ptr1);
-    ASSERT_M(getBlock(ptr1)->len == (2 * sizeof(Block) + 2),
-             "Size of block expected to be %i but was %i instead",
-             (2 * sizeof(Block) + 2), getBlock(ptr1)->len);
+    test_block_size(getBlock(ptr1), (2 * sizeof(Block) + 2)); // check that block is properly defragged
 
-    char done[] = "test_malloc done";   
+    ptr2 = malloc(4);
+    test_block_size(getBlock(ptr1), (sizeof(Block) - 2)); // check that block is broken down for space
+
+    for(int i = 0; i < 200; i++) { // make sure it doesn't leak unexpectedly
+        ptr2 = malloc(4);
+        free(ptr2);
+    }
+
+    test_block_size(getBlock(ptr1), (2 * sizeof(Block) + 2));
+    ASSERT_M(getBlock(ptr1)->next == NULL, "Head should not have ended with a `next` value");
+
+    char done[] = "test_malloc done";
     while (!serialWriteReady(COM1))
         ;
     serialWrite(COM1, (uint8_t *)(done), sizeof(done) - 1);
