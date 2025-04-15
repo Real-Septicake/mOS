@@ -56,6 +56,18 @@ void test_main() {
     ASSERT_M(getBlock(ptr1)->next == NULL,
              "Head should not have ended with a `next` value");
 
+    ptr1 = calloc(14, sizeof(Block));
+    test_block_size(getBlock(ptr1), 14 * sizeof(Block));
+
+    ptr1 = realloc(ptr1, 10 * sizeof(Block));
+    test_block_size(getBlock(ptr1), 14 * sizeof(Block));
+
+    ptr1 = realloc(ptr1, 12 * sizeof(Block));
+    test_block_size(getBlock(ptr1), 14 * sizeof(Block));
+
+    ptr1 = calloc(14, sizeof(Block));
+    test_block_size(getBlock(ptr1), 14 * sizeof(Block));
+
     char done[] = "test_malloc done";
     while (!serialWriteReady(COM1))
         ;

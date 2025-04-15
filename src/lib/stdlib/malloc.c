@@ -127,6 +127,29 @@ void *malloc(size_t size) {
     }
 }
 
+void *realloc(void *ptr, size_t size) {
+    Block *header = ptr - sizeof(Block);
+    if (size < header->len)
+        return ptr;
+    else {
+        void *nptr = malloc(size);
+        if (nptr == NULL)
+            return NULL;
+        memcpy(nptr, ptr, size);
+        free(nptr);
+        return nptr;
+    }
+    return NULL;
+}
+
+void *calloc(size_t nmem, size_t size) {
+    void *ptr = malloc(nmem * size);
+    if (ptr == NULL)
+        return NULL;
+    memset(ptr, 0, nmem * size);
+    return ptr;
+}
+
 void free(void *ptr) {
     Block *header = ptr - sizeof(Block);
     // probably needs a better check, but it's nearly midnight
