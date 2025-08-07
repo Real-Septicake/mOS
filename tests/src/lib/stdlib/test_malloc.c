@@ -12,11 +12,6 @@ Block *getBlock(void *ptr) {
     return (Block *)(ptr - sizeof(Block));
 }
 
-void restart_malloc(void) {
-    init_malloc();
-    sbrk(0x100000); // stupid issue :(
-}
-
 void test_block_size(Block *ptr, size_t expected) {
     ASSERT_M(ptr->len == expected,
              "Size of block expected to be %i but was %i instead", expected,
@@ -24,8 +19,6 @@ void test_block_size(Block *ptr, size_t expected) {
 }
 
 void test_main() {
-    restart_malloc();
-
     void *ptr1 = malloc(sizeof(Block));
     test_block_size(getBlock(ptr1), sizeof(Block));
 

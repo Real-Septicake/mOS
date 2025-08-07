@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include "device/serial.h"
+#include "malloc.h"
 
 typedef void (*vfunc_t)(void);
 
@@ -25,6 +26,8 @@ void enterTesting(void) {
 
         current += bytes;
     }
+
+    (void)sbrk(size);
 
     program();
 }
