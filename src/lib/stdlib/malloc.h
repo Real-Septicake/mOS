@@ -19,7 +19,6 @@ typedef struct {
 } Chunk;
 
 void *sbrk(intptr_t);
-void init_malloc(void);
 void *malloc(size_t size);
 void *realloc(void *ptr, size_t size);
 void *calloc(size_t nmem, size_t size);

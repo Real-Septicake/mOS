@@ -8,6 +8,8 @@
 #include "test.h"
 #include "video/VGA_text.h"
 
+extern void init_malloc(void);
+
 void testHandler(struct PS2Buf_t out) {
     static char buff[65];
     static int idx = 0;
