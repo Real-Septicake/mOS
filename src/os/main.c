@@ -5,6 +5,8 @@
 #include "pit/pit.h"
 #include "test.h"
 #include "video/VGA_text.h"
+#include "hard/cpu.h"
+#include "stdio.h"
 
 int os_main() {
     makeInterruptTable();
@@ -14,6 +16,8 @@ int os_main() {
     ps2Init();
 
     clearScreen(black);
+
+    DUMP();
 
     writeText("Welcome To mOS!", (80 - 15) / 2, 5, red);
 
